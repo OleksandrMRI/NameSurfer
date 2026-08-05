@@ -15,6 +15,7 @@ import acm.graphics.*;
 import java.awt.event.*;
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 
 public class NameSurferGraph extends GCanvas
@@ -38,7 +39,7 @@ public class NameSurferGraph extends GCanvas
     /**
      * ArrayList with instances of all NameSurferEntry for drawing graph
      */
-    private static final ArrayList<NameSurferEntry> ENTRIES = new ArrayList<>();
+    private static final HashMap<String,NameSurferGraphRecord> ENTRIES_GRAPHS = new HashMap<>();
     /**
      * Array with colors for drawing graph
      */
@@ -46,7 +47,7 @@ public class NameSurferGraph extends GCanvas
     /**
      * number of colors for drawing graphs
      */
-    private static final int COLOR_NUMBER_SELECTOR = 3;
+    private static final int NUMBER_COLORS = 3;
     /**
      * ArrayList with Colors for all drawn graph
      */
@@ -80,9 +81,7 @@ public class NameSurferGraph extends GCanvas
      * Clears the list of name surfer entries stored inside this class.
      */
     public void clear() {
-        ENTRIES_NAMES.clear();
-        GRAPH_COLORS.clear();
-        ENTRIES.clear();
+        ENTRIES_GRAPHS.clear();
 
         update();
     }
@@ -100,21 +99,16 @@ public class NameSurferGraph extends GCanvas
     }
 
     /**
-     * Adds a new NameSurferEntry to the list of entries on the display.
+     * Adds a new NameSurferEntry to the HashMap<> ENTRIES_GRAPHS of entries on the display.
      * Note that this method does not actually draw the graph, but
      * simply stores the entry; the graph is drawn by calling update.
      */
     public void addEntry(NameSurferEntry entry) {
-        if (entry != null && !ENTRIES_NAMES.contains(entry.getName().toLowerCase())) {
-            //adding name of NameSurferEntry to array of names of entries
-            ENTRIES_NAMES.add(entry.getName().toLowerCase());
-            System.out.println(ENTRIES_NAMES);
+        if (entry != null && !ENTRIES_GRAPHS.containsKey(entry.getName().toLowerCase())) {
             //receiving color for entry graph, that there is yet not use at canvas
-            getColor();
-            System.err.println(entry);
-            //adding NameSurferEntry to array of entries
-            ENTRIES.add(entry);
-            System.out.println(ENTRIES);
+            Color color = getColor();
+            ENTRIES_GRAPHS.put(entry.getName().toLowerCase(), new NameSurferGraphRecord(color,entry));
+            System.out.println(ENTRIES_GRAPHS);
         }
 
         update();
@@ -131,8 +125,8 @@ public class NameSurferGraph extends GCanvas
         StringBuilder missingNames = new StringBuilder();
 
         for (String name : names) {
-            if (ENTRIES_NAMES.contains(name)) {
-                removeName(name);
+            if (ENTRIES_GRAPHS.containsKey(name.toLowerCase())) {
+                ENTRIES_GRAPHS.remove(name);
             } else {
                 formMissingNamesStringBuilder(name, missingNames);
             }
@@ -156,15 +150,6 @@ public class NameSurferGraph extends GCanvas
     }
 
     /**
-     * The method draws entity graphs at canvas aus Arraylist<NameSurferEntry>
-     */
-    private void drawGraphs() {
-        for (int i = 0; i < ENTRIES.size(); i++) {
-            drawGraph(ENTRIES.get(i), GRAPH_COLORS.get(i));
-        }
-    }
-
-    /**
      * The method draws all components of initial grid of decades:
      * grid with vertical and horizontal lines and decades signatures
      */
@@ -175,11 +160,52 @@ public class NameSurferGraph extends GCanvas
     }
 
     /**
+     * The method draws horizontal lines of decade grid at the canvas
+     */
+    private void drawHorizontalLines() {
+        double lineOffsetY;
+
+        for (int i = 0; i < NUM_HORIZONTAL_LINES; i++) {
+            //calculating offset y of horizontal lines of decade grid
+            lineOffsetY = i == 0 ? GRAPH_MARGIN_SIZE : getHeight() - GRAPH_MARGIN_SIZE;
+            drawLine(0, lineOffsetY, getWidth(), lineOffsetY, Color.BLACK);
+        }
+    }
+
+    /**
+     * The method draws vertical lines of decade grid at the canvas
+     */
+    private void drawVerticalLines() {
+        double lineOffsetX;
+        for (int decadeIndex = 0; decadeIndex < NDECADES; decadeIndex++) {
+
+            //calculating offset x of vertical lines of decade grid
+            lineOffsetX = (double) getWidth() / 12 * decadeIndex;
+
+            drawLine(lineOffsetX, 0, lineOffsetX, getHeight(), Color.BLACK);
+        }
+    }
+
+    /**
+     * The method draws the line at the canvas
+     *
+     * @param firstPointX  offset x first endpoint of line
+     * @param firstPointY  offset x first endpoint of line
+     * @param secondPointX offset x second endpoint of line
+     * @param secondPointY offset x second endpoint of line
+     * @param color        color of line
+     */
+    private void drawLine(double firstPointX, double firstPointY, double secondPointX, double secondPointY, Color color) {
+        GLine line = new GLine(firstPointX, firstPointY, secondPointX, secondPointY);
+        line.setColor(color);
+        add(line);
+    }
+
+    /**
      * The method draws decades signatures from 1900 to 2010 at еру bottom of the canvas,
      * aligned with the vertical decade lines.
      */
     private void drawDecadesSignatures() {
-        System.out.println("drawing decade");
         int decade = START_DECADE;
         String decadeAsString;
 
@@ -215,60 +241,31 @@ public class NameSurferGraph extends GCanvas
     }
 
     /**
-     * The method draws vertical lines of decade grid at the canvas
-     */
-    private void drawVerticalLines() {
-        double lineOffsetX;
-        for (int decadeIndex = 0; decadeIndex < NDECADES; decadeIndex++) {
-
-            //calculating offset x of vertical lines of decade grid
-            lineOffsetX = (double) getWidth() / 12 * decadeIndex;
-
-            drawLine(lineOffsetX, 0, lineOffsetX, getHeight(), Color.BLACK);
-        }
-    }
-
-    /**
-     * The method draws horizontal lines of decade grid at the canvas
-     */
-    private void drawHorizontalLines() {
-        double lineOffsetY;
-        for (int i = 0; i < NUM_HORIZONTAL_LINES; i++) {
-            //calculating offset y of horizontal lines of decade grid
-            lineOffsetY = i == 0 ? GRAPH_MARGIN_SIZE : getHeight() - GRAPH_MARGIN_SIZE;
-            drawLine(0, lineOffsetY, getWidth(), lineOffsetY, Color.BLACK);
-        }
-    }
-
-    /**
-     * The method draws the line at the canvas
-     *
-     * @param firstPointX  offset x first endpoint of line
-     * @param firstPointY  offset x first endpoint of line
-     * @param secondPointX offset x second endpoint of line
-     * @param secondPointY offset x second endpoint of line
-     * @param color        color of line
-     */
-    private void drawLine(double firstPointX, double firstPointY, double secondPointX, double secondPointY, Color color) {
-        GLine line = new GLine(firstPointX, firstPointY, secondPointX, secondPointY);
-        line.setColor(color);
-        add(line);
-    }
-
-    /**
      * The method generates new random color, checks if this color is already contained at ArayList with colors
      * or is it  BLACK or WHITE (grid and canvas colors),
      * and save in ArayList with colors only original color
      */
-    private void getColor() {
-        GRAPH_COLORS.add(COLORS[colorIndex++ % COLOR_NUMBER_SELECTOR]);
+    private Color getColor() {
+        return COLORS[colorIndex++ % NUMBER_COLORS];
+    }
+
+    /**
+     * The method draws entity graphs at canvas aus Arraylist<NameSurferEntry>
+     */
+    private void drawGraphs() {
+        for (NameSurferGraphRecord recordValue: ENTRIES_GRAPHS.values()) {
+            drawGraph(recordValue.nameSurferEntry(), recordValue.color());
+        }
     }
 
     /**
      * The method draws graph of one entry
+     * First, it places the popularity level points,
+     * then connects them with lines,
+     * and finally creates labels at each level.
      *
-     * @param nameSurferEntry
-     * @param color
+     * @param nameSurferEntry object NameSurferEntry that must be represented as graph
+     * @param color color of graph
      */
     private void drawGraph(NameSurferEntry nameSurferEntry, Color color) {
         //creating array of all points of rank of name according to decade
@@ -372,19 +369,8 @@ public class NameSurferGraph extends GCanvas
      */
     private static String[] getNamesForCleaning(String userText) {
         String name = userText.trim();
+        //splitting with separator than is no letter
         return name.split("[\\d+\\W]");
-    }
-
-    /**
-     * The method accepts a name and removes it from all databases used for rendering the graph.
-     *
-     * @param name name, whose graph must be deleted
-     */
-    private static void removeName(String name) {
-        int nameIndex = ENTRIES_NAMES.indexOf(name);
-        ENTRIES_NAMES.remove(nameIndex);
-        ENTRIES.remove(nameIndex);
-        GRAPH_COLORS.remove(nameIndex);
     }
 
     /**
@@ -395,7 +381,6 @@ public class NameSurferGraph extends GCanvas
      */
     static void formMissingNamesStringBuilder(String name, StringBuilder missingNames) {
         if (!missingNames.isEmpty()) {
-            System.out.println("is not empty");
             missingNames.append(", ").append(name.toUpperCase());
         } else {
             missingNames.append(name.toUpperCase());

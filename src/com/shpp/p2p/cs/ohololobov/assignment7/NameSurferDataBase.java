@@ -83,7 +83,7 @@ public class NameSurferDataBase implements NameSurferConstants {
     public NameSurferEntry findEntry(String name) {
         for (String key : ENTRIES.keySet())
             if (key.equalsIgnoreCase(name)) {
-                System.out.println(new NameSurferEntry(ENTRIES.get(key)));
+                System.out.println("Found entry: " + new NameSurferEntry(ENTRIES.get(key)));
                 return new NameSurferEntry(ENTRIES.get(key));
             }
         return null;
