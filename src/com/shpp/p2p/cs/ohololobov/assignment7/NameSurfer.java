@@ -100,7 +100,7 @@ public class NameSurfer extends SimpleProgram implements NameSurferConstants {
     /**
      * The text of message indicates, that the name is missing from the database
      */
-    private static final String NO_SUCH_NAME_ERROR = "There is no name \"%s\" in the database";
+    private static final String NO_SUCH_NAME_ERROR = "There is no name '%s' in the database";
     /**
      * Window title for the message indicating the name is missing from the database
      */
@@ -108,7 +108,7 @@ public class NameSurfer extends SimpleProgram implements NameSurferConstants {
     /**
      * The text of message indicates, that graph the name is missing from the canvas
      */
-    private static final String NO_SUCH_GRAPH_ERROR = "There is no graph for '%s' at the canvas";
+    private static final String NO_SUCH_GRAPH_ERROR = "There is no graph for name\\s '%s' at the canvas";
     /**
      * Window title for the message indicating the name is missing from the canvas
      */
