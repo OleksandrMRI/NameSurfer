@@ -58,7 +58,7 @@ public class NameSurfer extends SimpleProgram implements NameSurferConstants {
     private static final String GRAPH_GETTING_INSTRUCTION_MSG =
             """
                     You can check a name's popularity
-                    by entering name or names in English (separated by a space) 
+                    by entering name or names in English (separated by a space)
                     into the text field and clicking the button "Graph".
                     If the name is in the database, a popularity graph will appear;
                     otherwise, the program will display a message stating
@@ -83,7 +83,7 @@ public class NameSurfer extends SimpleProgram implements NameSurferConstants {
      */
     private static final String GRAPH_CLEANING_INSTRUCTION_MSG =
             """
-                    To remove the graph for a specific name, type the word "сlear" 
+                    To remove the graph for a specific name, type the word "сlear"
                     and the needed name or names (separated by a space)
                     for example "clear alex" or "clear alex omar bil"
                     into the text field and press Enter.
@@ -108,7 +108,7 @@ public class NameSurfer extends SimpleProgram implements NameSurferConstants {
     /**
      * The text of message indicates, that graph the name is missing from the canvas
      */
-    private static final String NO_SUCH_GRAPH_ERROR = "There is no graph for \'%s\' at the canvas";
+    private static final String NO_SUCH_GRAPH_ERROR = "There is no graph for '%s' at the canvas";
     /**
      * Window title for the message indicating the name is missing from the canvas
      */

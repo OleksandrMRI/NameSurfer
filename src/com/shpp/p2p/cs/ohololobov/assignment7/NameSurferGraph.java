@@ -14,7 +14,6 @@ import acm.graphics.*;
 
 import java.awt.event.*;
 import java.awt.*;
-import java.util.ArrayList;
 import java.util.HashMap;
 
 
@@ -48,14 +47,6 @@ public class NameSurferGraph extends GCanvas
      * number of colors for drawing graphs
      */
     private static final int NUMBER_COLORS = 3;
-    /**
-     * ArrayList with Colors for all drawn graph
-     */
-    private static final ArrayList<Color> GRAPH_COLORS = new ArrayList<>();
-    /**
-     * ArrayList with names of all NameSurferEntry for drawing graph
-     */
-    private static final ArrayList<String> ENTRIES_NAMES = new ArrayList<>();
     /**
      * shift offset of GRect according to point of popularity,
      * to draw GRect for better visualization of popularity point
@@ -286,7 +277,7 @@ public class NameSurferGraph extends GCanvas
      */
     private GPoint[] getRankPointsArray(NameSurferEntry nameSurferEntry) {
         GPoint[] points = new GPoint[NDECADES];
-        double distanceY = (double) getWidth() / NDECADES;
+        double distanceX = (double) getWidth() / NDECADES;
         double offSetX = 0;
 
         for (int decadeIndex = 0; decadeIndex < NDECADES; decadeIndex++) {
@@ -296,7 +287,7 @@ public class NameSurferGraph extends GCanvas
             } else {
                 points[decadeIndex] = new GPoint(offSetX, getHeight() - GRAPH_MARGIN_SIZE);
             }
-            offSetX += distanceY;
+            offSetX += distanceX;
         }
 
         return points;
