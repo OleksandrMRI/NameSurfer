@@ -1,15 +1,25 @@
 package com.shpp.p2p.cs.ohololobov.assignment7;
 
-/*
+/**
  * File: NameSurfer.java
  * ---------------------
- * When it is finished, this program will implement the viewer for
- * the baby-name database described in the assignment handout.
+ * The program generates a popularity graph for names given to children in American families between 1900 and 2010.
+ * You can check a name's popularity by entering name or names in English (separated by a space) into the text field
+ * and clicking the button "Graph" or pressing key "Enter". If the name is in the database,
+ * a popularity graph will appear; otherwise, the program will display a message stating
+ * that the name\s was\were not found. Click the button "Clear" to clear all graphs from the screen.
+ * To remove the graph for a specific name\s, type the word "clear" and the needed name or names (separated by a space),
+ * for example "clear alex" or "clear alex omar bil" into the text field and press key "Enter".
+ * With button "Delete" will be deleted all names printing in text field,
+ * use button "Delete" without command-word "clear". If the graph\s of checked name\s is\are at the canvas,
+ * it\they will be removed; otherwise, the program will display a message stating
+ * that graphs for certain names were not found.
  */
 
 import com.shpp.cs.a.simple.SimpleProgram;
 
 import java.awt.event.*;
+import java.io.IOException;
 import javax.swing.*;
 
 public class NameSurfer extends SimpleProgram implements NameSurferConstants {
@@ -39,6 +49,8 @@ public class NameSurfer extends SimpleProgram implements NameSurferConstants {
      * Text of JLabel links from JTextField nameField, explaining the purpose of the JTextField
      */
     private static final String NAME_LABEL_SIGNATURE = "Name: ";
+
+    private static final String CONFIRM_DIALOG_MESSAGE = "Skip program instruction";
     /**
      * The text for information window, that describe user, what does the program do, in
      */
@@ -94,9 +106,9 @@ public class NameSurfer extends SimpleProgram implements NameSurferConstants {
      */
     private static final String CLEAR_NAME_FLAG = "clear";
     /**
-     * empty line
+     * An empty line replaces the keyword "clear" in the user's line to prepare it for name parsing.
      */
-    private static final String EMPTY_LINE = "";
+    private static final String REPLACING_STRING = "";
     /**
      * The text of message indicates, that the name is missing from the database
      */
@@ -129,10 +141,12 @@ public class NameSurfer extends SimpleProgram implements NameSurferConstants {
 
     //initial block that calls information window before showing main window of program
     {
-        JOptionPane.showMessageDialog(this, PROGRAM_DESCRIPTION_MSG);
-        JOptionPane.showMessageDialog(this, GRAPH_GETTING_INSTRUCTION_MSG);
-        JOptionPane.showMessageDialog(this, All_GRAPHS_CLEANING_INSTRUCTION_MSG);
-        JOptionPane.showMessageDialog(this, GRAPH_CLEANING_INSTRUCTION_MSG);
+        if (JOptionPane.showConfirmDialog(this, CONFIRM_DIALOG_MESSAGE) == JOptionPane.NO_OPTION) {
+            JOptionPane.showMessageDialog(this, PROGRAM_DESCRIPTION_MSG);
+            JOptionPane.showMessageDialog(this, GRAPH_GETTING_INSTRUCTION_MSG);
+            JOptionPane.showMessageDialog(this, All_GRAPHS_CLEANING_INSTRUCTION_MSG);
+            JOptionPane.showMessageDialog(this, GRAPH_CLEANING_INSTRUCTION_MSG);
+        }
     }
 
     /* Method: init() */
@@ -142,6 +156,13 @@ public class NameSurfer extends SimpleProgram implements NameSurferConstants {
      * and initializing the interactors at the top of the window.
      */
     public void init() {
+        try {
+            nameSurferDataBase = new NameSurferDataBase(NAMES_DATA_FILE);
+        } catch (IOException e) {
+            System.err.println("It was Exception from constructor NameSurferDataBase() received. " + e.getMessage());
+
+            return;
+        }
         JLabel name = new JLabel(NAME_LABEL_SIGNATURE);
         add(NORTH, name);
         nameField = new JTextField(TEXT_FIELD_USER_REQUEST_MESSAGE, TEXT_FIELD_LENGTH);
@@ -154,10 +175,10 @@ public class NameSurfer extends SimpleProgram implements NameSurferConstants {
         add(NORTH, clearButton);
         deleteButton = new JButton(DELETE_BUTTON_LABEL);
         add(NORTH, deleteButton);
-        this.addActionListeners();
         graph = new NameSurferGraph();
         add(graph);
-        nameSurferDataBase = new NameSurferDataBase(NAMES_DATA_FILE);
+
+        this.addActionListeners();
     }
 
     /* Method: actionPerformed(e) */
@@ -169,59 +190,59 @@ public class NameSurfer extends SimpleProgram implements NameSurferConstants {
      */
     public void actionPerformed(ActionEvent e) {
         String userText = nameField.getText();
+        if (userText != null) {
+            String normaliseUserString = userText.trim().toLowerCase();
+            boolean startsWithClear = normaliseUserString.startsWith(CLEAR_NAME_FLAG);
 
-        if (e.getActionCommand().equals(PRESS_ENTER)) {
+            if (e.getActionCommand().equals(PRESS_ENTER) && startsWithClear
+                    || e.getSource().equals(deleteButton)) {
 
-            if (userText != null && userText.trim().toLowerCase().startsWith(CLEAR_NAME_FLAG)) {
-                //clearing graphs, which names are at canvas and return line with names, which names are not at canvas
-                String names = graph.clearGraphs(userText.trim().toLowerCase().replaceFirst(CLEAR_NAME_FLAG, EMPTY_LINE));
-                //notifying user about missin graphs with specific names if those are available
-                if (!names.isEmpty()) {
-                    JOptionPane.showMessageDialog(this, String.format(NO_SUCH_GRAPH_ERROR, names), NO_SUCH_GRAPH_ERROR_TITLE, JOptionPane.ERROR_MESSAGE);
+                if (startsWithClear) {
+                    //clearing graphs, which names are at canvas and return line with names, which names are not at canvas
+                    normaliseUserString = normaliseUserString.replaceFirst(CLEAR_NAME_FLAG, REPLACING_STRING);
                 }
-            } else {
-                //drawing graphs of names, which are in database and form StringBuilder with missing names
-                drawGraphOrThrowErrorMessage(nameSurferDataBase);
-            }
+                String[] names = NameSurferUtils.parsStringToWords(normaliseUserString, USER_STRING_SEPARATOR_REGEX);
+                String missingNames = graph.deleteGraphs(names);
+                graph.update();
+                //notifying user about missin graphs with specific names if those are available
+                if (!missingNames.isEmpty()) {
+                    JOptionPane.showMessageDialog(this, String.format(NO_SUCH_GRAPH_ERROR, missingNames),
+                            NO_SUCH_GRAPH_ERROR_TITLE, JOptionPane.ERROR_MESSAGE);
+                }
 
-        } else if (e.getSource() == graphButton) {
-            //drawing graphs of names, which are in database and form StringBuilder with missing names
-            drawGraphOrThrowErrorMessage(nameSurferDataBase);
+            } else if (e.getSource() == graphButton || e.getActionCommand().equals(PRESS_ENTER)) {
+                String[] entryNames = NameSurferUtils.parsStringToWords(nameField.getText(), USER_STRING_SEPARATOR_REGEX);
+                String missingNames = addEntriesToDrawing(entryNames);
+                graph.update();
+                // throwing error message, if StringBuilder with missed names is not empty
+                if (!missingNames.isEmpty()) {
+                    JOptionPane.showMessageDialog(this, String.format(NO_SUCH_NAME_ERROR, missingNames), NO_SUCH_NAME_ERROR_TITLE, JOptionPane.ERROR_MESSAGE);
+                }
+            }
         } else if (e.getSource() == clearButton) {
             //deleting all graphs from the canvas
             graph.clear();
-        } else {
-            //if delete button is pressed, clearing graphs, which names are at canvas and return line with names, which names are not at canvas
-            String names = graph.clearGraphs(userText);
-
-            if (!names.isEmpty()) {
-                JOptionPane.showMessageDialog(this, String.format(NO_SUCH_GRAPH_ERROR, names), NO_SUCH_GRAPH_ERROR_TITLE, JOptionPane.ERROR_MESSAGE);
-            }
+            graph.update();
         }
     }
 
     /**
-     * The method draws graph or graphs of name\s from user line
-     *
-     * @param nameSurferDataBase database with names
+     * The method receives array with entry names from user string and adds valid entries to HashMap
+     * with entries to graph drawing. Those names that are not in database return as a string missingNames
+     * @param entryNames array of names from user string
+     * @return string with all missing in database names
      */
-    private void drawGraphOrThrowErrorMessage(NameSurferDataBase nameSurferDataBase) {
-        String[] entryNames = nameField.getText().toLowerCase().split("[\\d+\\W]");
+    private String addEntriesToDrawing(String[] entryNames) {
         StringBuilder missingEntryNames = new StringBuilder();
         //finding entry in database with name of entry from nameField
         NameSurferEntry entry;
-
         for (String name : entryNames) {
             if ((entry = nameSurferDataBase.findEntry(name)) != null) {
                 graph.addEntry(entry);
             } else {
-                NameSurferGraph.formMissingNamesStringBuilder(name, missingEntryNames);
+                NameSurferUtils.formMissingNamesStringBuilder(name, missingEntryNames);
             }
         }
-
-        // throwing error message, if StringBuilder with missed names is not empty
-        if (!missingEntryNames.isEmpty()) {
-            JOptionPane.showMessageDialog(this, String.format(NO_SUCH_NAME_ERROR, missingEntryNames), NO_SUCH_NAME_ERROR_TITLE, JOptionPane.ERROR_MESSAGE);
-        }
+        return missingEntryNames.toString();
     }
 }

@@ -13,36 +13,39 @@ public interface NameSurferConstants {
     /**
      * The width of the application window
      */
-    public static final int APPLICATION_WIDTH = 800;
+    int APPLICATION_WIDTH = 800;
 
     /**
      * The height of the application window
      */
-    public static final int APPLICATION_HEIGHT = 400;
+    int APPLICATION_HEIGHT = 400;
 
     /**
      * The name of the file containing the data
      */
-    public static final String NAMES_DATA_FILE = "assets/names-data.txt";
+    String NAMES_DATA_FILE = "assets/names-data.txt";
 
     /**
      * The first decade in the database
      */
-    public static final int START_DECADE = 1900;
+    int START_DECADE = 1900;
 
     /**
      * The number of decades
      */
-    public static final int NDECADES = 12;
+    int NDECADES = 12;
 
     /**
      * The maximum rank in the database
      */
-    public static final int MAX_RANK = 1000;
+    int MAX_RANK = 1000;
 
     /**
      * The number of pixels to reserve at the top and bottom
      */
-    public static final int GRAPH_MARGIN_SIZE = 20;
-
+    int GRAPH_MARGIN_SIZE = 20;
+    /**
+     * separator as regular expression to parsing user lines
+     */
+    String USER_STRING_SEPARATOR_REGEX = "[\\d\\W]";
 }

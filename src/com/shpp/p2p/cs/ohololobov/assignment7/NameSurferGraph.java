@@ -38,15 +38,11 @@ public class NameSurferGraph extends GCanvas
     /**
      * ArrayList with instances of all NameSurferEntry for drawing graph
      */
-    private static final HashMap<String,NameSurferGraphRecord> ENTRIES_GRAPHS = new HashMap<>();
+    private static final HashMap<String, NameSurferGraphRecord> ENTRIES_GRAPHS = new HashMap<>();
     /**
      * Array with colors for drawing graph
      */
-    private static final Color[] COLORS = {Color.BLUE, Color.RED, Color.MAGENTA};
-    /**
-     * number of colors for drawing graphs
-     */
-    private static final int NUMBER_COLORS = 3;
+    private static final Color[] COLORS = {Color.BLUE, Color.RED, Color.MAGENTA, Color.BLACK};
     /**
      * shift offset of GRect according to point of popularity,
      * to draw GRect for better visualization of popularity point
@@ -73,8 +69,7 @@ public class NameSurferGraph extends GCanvas
      */
     public void clear() {
         ENTRIES_GRAPHS.clear();
-
-        update();
+        colorIndex = 0;
     }
 
     /**
@@ -85,6 +80,7 @@ public class NameSurferGraph extends GCanvas
      * the size of the canvas changes.
      */
     public void update() {
+        System.out.println("update");
         repaintGrid();
         drawGraphs();
     }
@@ -98,33 +94,28 @@ public class NameSurferGraph extends GCanvas
         if (entry != null && !ENTRIES_GRAPHS.containsKey(entry.getName().toLowerCase())) {
             //receiving color for entry graph, that there is yet not use at canvas
             Color color = getColor();
-            ENTRIES_GRAPHS.put(entry.getName().toLowerCase(), new NameSurferGraphRecord(color,entry));
+            ENTRIES_GRAPHS.put(entry.getName().toLowerCase(), new NameSurferGraphRecord(color, entry));
             System.out.println(ENTRIES_GRAPHS);
         }
-
-        update();
     }
 
     /**
-     * The method clear canvas from graphs with name from user line
+     * The method delete name\s from user line from HashMap with entries to drawing
+     * and return string with names that missing at canvas
      *
-     * @param userText user line with name to deleting
      * @return line with names, which are not represent at canvas
      */
-    public String clearGraphs(String userText) {
-        String[] names = getNamesForCleaning(userText);
+    public String deleteGraphs(String[] names) {
         StringBuilder missingNames = new StringBuilder();
 
         for (String name : names) {
-            if (ENTRIES_GRAPHS.containsKey(name.toLowerCase())) {
+            if (ENTRIES_GRAPHS.containsKey(name)) {
                 ENTRIES_GRAPHS.remove(name);
             } else {
-                formMissingNamesStringBuilder(name, missingNames);
+                NameSurferUtils.formMissingNamesStringBuilder(name, missingNames);
             }
         }
-
-        update();
-
+        if (ENTRIES_GRAPHS.isEmpty()) colorIndex = 0;
         if (!missingNames.isEmpty()) {
             return missingNames.toString();
         }
@@ -171,7 +162,7 @@ public class NameSurferGraph extends GCanvas
         for (int decadeIndex = 0; decadeIndex < NDECADES; decadeIndex++) {
 
             //calculating offset x of vertical lines of decade grid
-            lineOffsetX = (double) getWidth() / 12 * decadeIndex;
+            lineOffsetX = (double) getWidth() / NDECADES * decadeIndex;
 
             drawLine(lineOffsetX, 0, lineOffsetX, getHeight(), Color.BLACK);
         }
@@ -237,14 +228,14 @@ public class NameSurferGraph extends GCanvas
      * and save in ArayList with colors only original color
      */
     private Color getColor() {
-        return COLORS[colorIndex++ % NUMBER_COLORS];
+        return COLORS[colorIndex++ % COLORS.length];
     }
 
     /**
      * The method draws entity graphs at canvas aus Arraylist<NameSurferEntry>
      */
     private void drawGraphs() {
-        for (NameSurferGraphRecord recordValue: ENTRIES_GRAPHS.values()) {
+        for (NameSurferGraphRecord recordValue : ENTRIES_GRAPHS.values()) {
             drawGraph(recordValue.nameSurferEntry(), recordValue.color());
         }
     }
@@ -256,7 +247,7 @@ public class NameSurferGraph extends GCanvas
      * and finally creates labels at each level.
      *
      * @param nameSurferEntry object NameSurferEntry that must be represented as graph
-     * @param color color of graph
+     * @param color           color of graph
      */
     private void drawGraph(NameSurferEntry nameSurferEntry, Color color) {
         //creating array of all points of rank of name according to decade
@@ -328,6 +319,7 @@ public class NameSurferGraph extends GCanvas
      */
     private void drawGraphLines(GPoint[] points, Color color) {
         int pointsLength = points.length;
+
         for (int i = 0; i < pointsLength; i++) {
             if (i < pointsLength - 1) {
                 drawLine(points[i].getX(), points[i].getY(), points[i + 1].getX(), points[i + 1].getY(), color);
@@ -349,32 +341,6 @@ public class NameSurferGraph extends GCanvas
                     : entry.getName() + " *";
 
             drawSignature(entrySignature, rankPoints[decadeIndex].getX(), rankPoints[decadeIndex].getY(), color);
-        }
-    }
-
-    /**
-     * The method receives text from user and splits text to String[]
-     *
-     * @param userText String from user
-     * @return String[]
-     */
-    private static String[] getNamesForCleaning(String userText) {
-        String name = userText.trim();
-        //splitting with separator than is no letter
-        return name.split("[\\d+\\W]");
-    }
-
-    /**
-     * The method appends name, that is missing in database to StringBuilder
-     *
-     * @param name         name that is missing in database
-     * @param missingNames StringBuilder to append missing name.
-     */
-    static void formMissingNamesStringBuilder(String name, StringBuilder missingNames) {
-        if (!missingNames.isEmpty()) {
-            missingNames.append(", ").append(name.toUpperCase());
-        } else {
-            missingNames.append(name.toUpperCase());
         }
     }
 

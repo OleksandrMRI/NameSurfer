@@ -1,6 +1,6 @@
 package com.shpp.p2p.cs.ohololobov.assignment7;
 
-/*
+/**
  * File: NameSurferEntry.java
  * --------------------------
  * This class represents a single entry in the database.  Each
@@ -11,8 +11,8 @@ package com.shpp.p2p.cs.ohololobov.assignment7;
 import java.util.*;
 
 public class NameSurferEntry implements NameSurferConstants {
-    String name;
-    int[] rankes;
+
+    private final String[] entryArray;
     /* Constructor: NameSurferEntry(line) */
 
     /**
@@ -22,8 +22,7 @@ public class NameSurferEntry implements NameSurferConstants {
      * decade.
      */
     public NameSurferEntry(String line) {
-        this.name = NameSurferDataBase.getName(line);
-        this.rankes = Arrays.stream((line.split(" "))).skip(1).mapToInt(Integer::parseInt).toArray();
+        entryArray = line.split(" ");
     }
 
     /* Method: getName() */
@@ -32,7 +31,7 @@ public class NameSurferEntry implements NameSurferConstants {
      * Returns the name associated with this entry.
      */
     public String getName() {
-        return name;
+        return entryArray[0];
     }
 
     /* Method: getRank(decade) */
@@ -45,7 +44,7 @@ public class NameSurferEntry implements NameSurferConstants {
      * not appear in a decade, the rank value is 0.
      */
     public int getRank(int decade) {
-        return rankes[decade];
+        return Integer.parseInt(entryArray[decade + 1]);
     }
 
     /* Method: toString() */
@@ -56,12 +55,13 @@ public class NameSurferEntry implements NameSurferConstants {
      */
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder(name).append(" ");
-        for (int decade = 0; decade < rankes.length; decade++) {
+        StringBuilder sb = new StringBuilder(entryArray[0]).append(" ");
+        for (int decade = 0; decade < NDECADES; decade++) {
+            String decadeRank = entryArray[decade + 1];
             if (decade > 0) {
-                sb.append(" ").append(rankes[decade]);
+                sb.append(" ").append(decadeRank);
             } else {
-                sb.append("[").append(rankes[decade]);
+                sb.append("[").append(decadeRank);
             }
         }
 
