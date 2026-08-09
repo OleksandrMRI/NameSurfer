@@ -1,7 +1,7 @@
 
 package com.shpp.p2p.cs.ohololobov.assignment7;
 
-/*
+/**
  * File: NameSurferGraph.java
  * ---------------------------
  * This class represents the canvas on which the graph of
@@ -80,7 +80,6 @@ public class NameSurferGraph extends GCanvas
      * the size of the canvas changes.
      */
     public void update() {
-        System.out.println("update");
         repaintGrid();
         drawGraphs();
     }
@@ -95,7 +94,6 @@ public class NameSurferGraph extends GCanvas
             //receiving color for entry graph, that there is yet not use at canvas
             Color color = getColor();
             ENTRIES_GRAPHS.put(entry.getName().toLowerCase(), new NameSurferGraphRecord(color, entry));
-            System.out.println(ENTRIES_GRAPHS);
         }
     }
 
@@ -112,7 +110,7 @@ public class NameSurferGraph extends GCanvas
             if (ENTRIES_GRAPHS.containsKey(name)) {
                 ENTRIES_GRAPHS.remove(name);
             } else {
-                NameSurferUtils.formMissingNamesStringBuilder(name, missingNames);
+                NameSurferUtils.formStringBuilderWithFormat(name, missingNames);
             }
         }
         if (ENTRIES_GRAPHS.isEmpty()) colorIndex = 0;

@@ -8,11 +8,12 @@ package com.shpp.p2p.cs.ohololobov.assignment7;
  * of that name for each decade stretching back to 1900.
  */
 
-import java.util.*;
-
 public class NameSurferEntry implements NameSurferConstants {
 
     private final String[] entryArray;
+    private final String name;
+    private final int[] ranks =new int[NDECADES];
+
     /* Constructor: NameSurferEntry(line) */
 
     /**
@@ -23,6 +24,12 @@ public class NameSurferEntry implements NameSurferConstants {
      */
     public NameSurferEntry(String line) {
         entryArray = line.split(" ");
+
+        this.name = entryArray[0];
+
+        for (int i = 1; i < entryArray.length; i++) {
+            this.ranks[i-1]=Integer.parseInt(entryArray[i]);
+        }
     }
 
     /* Method: getName() */
@@ -31,7 +38,7 @@ public class NameSurferEntry implements NameSurferConstants {
      * Returns the name associated with this entry.
      */
     public String getName() {
-        return entryArray[0];
+        return name;
     }
 
     /* Method: getRank(decade) */
@@ -43,8 +50,8 @@ public class NameSurferEntry implements NameSurferConstants {
      * which is given by the constant START_DECADE.  If a name does
      * not appear in a decade, the rank value is 0.
      */
-    public int getRank(int decade) {
-        return Integer.parseInt(entryArray[decade + 1]);
+    public int getRank(int decadeIndex) {
+        return ranks[decadeIndex];
     }
 
     /* Method: toString() */

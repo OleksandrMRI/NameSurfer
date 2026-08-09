@@ -229,6 +229,7 @@ public class NameSurfer extends SimpleProgram implements NameSurferConstants {
     /**
      * The method receives array with entry names from user string and adds valid entries to HashMap
      * with entries to graph drawing. Those names that are not in database return as a string missingNames
+     *
      * @param entryNames array of names from user string
      * @return string with all missing in database names
      */
@@ -240,7 +241,7 @@ public class NameSurfer extends SimpleProgram implements NameSurferConstants {
             if ((entry = nameSurferDataBase.findEntry(name)) != null) {
                 graph.addEntry(entry);
             } else {
-                NameSurferUtils.formMissingNamesStringBuilder(name, missingEntryNames);
+                NameSurferUtils.formStringBuilderWithFormat(name, missingEntryNames);
             }
         }
         return missingEntryNames.toString();

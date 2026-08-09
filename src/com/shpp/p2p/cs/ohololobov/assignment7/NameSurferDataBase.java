@@ -1,6 +1,6 @@
 package com.shpp.p2p.cs.ohololobov.assignment7;
 
-/*
+/**
  * File: NameSurferDataBase.java
  * -----------------------------
  * This class keeps track of the complete database of names.
