@@ -155,6 +155,7 @@ public class NameSurfer extends SimpleProgram implements NameSurferConstants {
      * This method has the responsibility for reading in the database
      * and initializing the interactors at the top of the window.
      */
+    @Override
     public void init() {
         try {
             nameSurferDataBase = new NameSurferDataBase(NAMES_DATA_FILE);
@@ -188,6 +189,7 @@ public class NameSurfer extends SimpleProgram implements NameSurferConstants {
      * clicked, so you will have to define a method to respond to
      * button actions.
      */
+    @Override
     public void actionPerformed(ActionEvent e) {
         String userText = nameField.getText();
         if (userText != null) {

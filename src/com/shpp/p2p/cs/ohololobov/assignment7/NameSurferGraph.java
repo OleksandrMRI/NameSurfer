@@ -343,17 +343,20 @@ public class NameSurferGraph extends GCanvas
     }
 
     /* Implementation of the ComponentListener interface */
-
+    @Override
     public void componentHidden(ComponentEvent e) {
     }
 
+    @Override
     public void componentMoved(ComponentEvent e) {
     }
 
+    @Override
     public void componentResized(ComponentEvent e) {
         update();
     }
 
+    @Override
     public void componentShown(ComponentEvent e) {
     }
 }
